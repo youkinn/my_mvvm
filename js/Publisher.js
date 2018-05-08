@@ -4,8 +4,8 @@ function Publisher() {
 }
 Publisher.prototype = {
   
-  // 发布消息
-  publish: function(data) {
+  // 通知订阅者
+  notify: function(data) {
     this.subs.forEach(function(item) {
       item.update(data);
     });

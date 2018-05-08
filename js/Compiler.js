@@ -29,7 +29,6 @@ Compiler.prototype = {
 
   // 遍历元素节点
   compileElement: function(root) {
-    debugger;
     var type = 0;
     var element = {};
     var regExp = /\{\{(.*)\}\}/;
@@ -74,9 +73,21 @@ Compiler.prototype = {
         case "v-model":
           util.addEvent(node, "input", function(e) {
             console.log("input");
-            that.vm.$data[attr.value] = e.target.value;
+            that.vm[attr.value] = e.target.value;
           });
-          node.value = that.vm.$data[attr.value];
+          node.value = that.vm[attr.value];
+          break;
+        case "v-click":
+          util.addEvent(node, "click", function(e) {
+            that.vm[attr.value].call(that.vm, e);
+          });
+          node.value = that.vm[attr.value];
+          break;
+        case "v-show":
+          new Subscriber(attr.name, function(data) {
+            node.style.display = data ? "block" : "none";
+          });
+          node.style.display = that.vm[attr.value] ? "block" : "none";
           break;
       }
     }

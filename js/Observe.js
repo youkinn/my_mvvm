@@ -28,7 +28,7 @@ Observe.prototype = {
       get: function() {
         if (Subscriber.current) {
           Subscriber.current.subscribe(center);
-          Subscriber.currTarget = null;
+          Subscriber.current = null;
         }
         return value;
       },
@@ -37,10 +37,9 @@ Observe.prototype = {
         if (value === newVal) {
           return;
         }
-        center.publish(newVal);
-        if (typeof newVal === "object") {
-          observe(newVal);
-        }
+        center.notify(newVal);
+        // observe(newVal);
+        value = newVal;
       }
     });
   }

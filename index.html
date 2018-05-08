@@ -16,13 +16,21 @@
 <body>
     <div id="app">
         <input type="text" v-model="message">
-        <p>{{ message }}</p>
+        <p v-click="clickHandle">{{ message }}</p>
+        <p v-show="hh">hh</p>
     </div>
     <script>
         var vm = new MVVM({
             el: '#app',
             data: {
-                message: 'hello'
+                message: 'hello',
+                hh: true
+            },
+            methods: {
+                clickHandle: function (){
+                    this.hh = !this.hh;
+                    console.log('clecked');
+                }
             }
         });
     </script>
