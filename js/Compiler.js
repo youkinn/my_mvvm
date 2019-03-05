@@ -3,16 +3,15 @@ function Compiler(vm) {
     this.vm = vm;
     this.$el = document.querySelector(vm.$el);
     if (!this.$el) {
-        console('el 不存在');
+        console("el 不存在");
         return;
     }
-    this.$fragment = this.transfrom(this.$el);  // app的一份copy，减少dom操作
+    this.$fragment = this.transfrom(this.$el); // app的一份copy，减少dom操作
     this.init(); // 这里会进行命令的解析以及替换，全部完成后反应到页面
     this.$el.appendChild(this.$fragment);
 }
 
 Compiler.prototype = {
-
     // 初始化
     init: function () {
         this.compileElement(this.$fragment);
@@ -109,14 +108,12 @@ var directive = {
 
 // 工具类
 var util = {
-
     // 是否指令
     isDirective: function (attrName) {
         return /^v-[\w]([\w\d_]*)$/.test(attrName);
     },
-
     // 事件注册
     addEvent: function (element, type, handle) {
         element.addEventListener(type, handle);
     }
-}
+};
