@@ -41,8 +41,8 @@ Object.defineProperty(obj, 'key', {
 ##### 第二个阶段则主要依赖于第一个阶段实例化的订阅者传入的回调进行dom的更新
 
 参照ng跟vue，我们可以自行设计一些命令。这里不那么复杂，我们先只实现数据绑定({{}}跟v-model)。其他的挑时间再试试(备忘)。
-→ ng: ng-repeat、ng-if、ng-click、etc
-→ vue: v-for、v-if、v-click、etc
+- ng: ng-repeat、ng-if、ng-click、etc
+- vue: v-for、v-if、v-click、etc
 
 nodeType:
 ELEMENT: 1 // 元素节点
