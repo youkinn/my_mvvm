@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,11 @@
     <script src="./js/Compiler.js"></script>
     <script src="./js/MVVM.js"></script>
 </head>
+
 <body>
     <div id="app">
-        <input type="text" v-model="message" >
+        <input type="text" v-model="message">
+        <p>{{ message }}</p>
         <p>{{ message }}</p>
     </div>
     <script>
@@ -21,6 +24,10 @@
                 message: 'hello'
             }
         });
+        setTimeout(() => {
+            vm.message = 333;
+        }, 2000);
     </script>
 </body>
+
 </html>

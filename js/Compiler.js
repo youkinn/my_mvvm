@@ -30,7 +30,6 @@ Compiler.prototype = {
 
     // 遍历元素节点
     compileElement: function (root) {
-        debugger
         var type = 0;
         var element = {};
         var regExp = /\{\{(.*)\}\}/;
@@ -39,12 +38,10 @@ Compiler.prototype = {
             type = element.nodeType;
             switch (type) {
                 case nodeType.ELEMENT:
-
                     // 递归遍历子节点
                     if (element.childNodes.length) {
                         this.compileElement(element);
                     }
-
                     // 遍历属性节点
                     if (element.attributes.length) {
                         this.compileAttr(element);
@@ -72,12 +69,15 @@ Compiler.prototype = {
             switch (attr.name) {
                 case directive.MODEL:
                     var that = this;
-                    util.addEvent(element, 'input', function (e) {
-                        debugger
-                        console.log('input');
-                        that.vm.$data[attr.value] = e.target.value;
+                    new Subscriber(attr.value, function (val) {
+                        element.value = val;
                     });
+                    util.addEvent(element, 'input', function (e) {
+                        that.vm[attr.value] = e.target.value;
+                    });
+                    element.value = that.vm[attr.value];
                     break;
+                default: ;
             }
         }
     },
@@ -88,12 +88,13 @@ Compiler.prototype = {
         var tempValue = '';
         var nodeValue = element.nodeValue;
         if (result && result[1]) {
-            tempValue = nodeValue.replace(result[0], this.vm.$data[result[1]]);
+            new Subscriber(result[1], function (val) {
+                element.nodeValue = val;
+            });
+            tempValue = nodeValue.replace(result[0], this.vm[result[1]]);
             element.nodeValue = tempValue;
         }
-    },
-
-
+    }
 };
 
 var nodeType = {
@@ -111,7 +112,7 @@ var util = {
 
     // 是否指令
     isDirective: function (attrName) {
-        return attrName.indexOf('v-') > -1;
+        return /^v-[\w]([\w\d_]*)$/.test(attrName);
     },
 
     // 事件注册
