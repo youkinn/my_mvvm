@@ -54,8 +54,56 @@ Object.defineProperty(obj, 'key', {
 - 思考：作为一个优化，能否将短时间内的多次更新->缩减到1次。ok，这样就引出了上面的2个概念：
 - 首先利用一定的手段将dom转成虚拟dom(对象模拟)，在一次周期(tick)内发生的所有变化，都先在构建的虚拟对象上操作，完了后再反应到真实dom。
 
-##### 第一个问题是：nextTick怎么设计？
-
+##### 第一个问题是：一次周期(tick)怎么设计？
 
 ##### 第二个问题是：虚拟dom怎么构建，以及如何比较之间的变化？
 
+首先看看vue中的实现：
+1. 对于给定的一段html，它会先转成类似下面的一个render函数，并挂载在vm实例上
+2. 监听到data里边对象的变化后，调用render函数生成新的虚拟Dom
+3. 将生成的虚拟dom，与老的虚拟dom，传入patch进行比较，得到一个差值，然后，更新到页面。
+
+```
+<div id="app">
+    <input type="text" v-model="message" >
+    <p>{{message}}</p>
+    <p>{{message}}</p>
+</div>
+                ↓
+(function anonymous() {
+  with (this) {
+    return _c("div", { attrs: { id: "app" } }, [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: message,
+            expression: "message"
+          }
+        ],
+        attrs: { type: "text" },
+        domProps: { value: message },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) return;
+            message = $event.target.value;
+          }
+        }
+      }),
+      _v(" "),
+      _c("p", [_v(_s(message))]),
+      _v(" "),
+      _c("p", [_v(_s(message))])
+    ]);
+  }
+});
+
+vm._watcher = new Watcher(vm, function () {
+   vm._update(vm._render(), hydrating);
+}, noop);
+
+vm.$el = vm.__patch__(prevVnode, vnode);
+```
+
+这里引出1个新问题 **diff比较算法的实现问题**，具体实现后面再说。
