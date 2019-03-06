@@ -4,11 +4,13 @@
 2. 实现一个编译器(Compiler.js), 处理页面上预置的命令( '{{}}'、指令、过滤器等 )。
 3. 实现一个MVVM实例(MVVM.js)，组合各部分功能，作为入口。
 
+<br/>
+
 #### 数据变化检测
 实现数据变化检测机制主要有2个关键点：
 1. 订阅发布模式
 2. es5的Object.defineproperty方法。
-	 Object.defineProperty(obj:Object, prop:String, descriptor:Object)
+     Object.defineProperty(obj:Object, prop:String, descriptor:Object)
 
 核心代码：
 ```
@@ -23,8 +25,7 @@ Object.defineProperty(obj, 'key', {
   }
 });
 ```
-
-
+<br/>
 
 #### 页面渲染&指令解析
 
@@ -40,11 +41,21 @@ Object.defineProperty(obj, 'key', {
 
 ##### 第二个阶段则主要依赖于第一个阶段实例化的订阅者传入的回调进行dom的更新
 
-参照ng跟vue，我们可以自行设计一些命令。这里不那么复杂，我们先只实现数据绑定({{}}跟v-model)。其他的挑时间再试试(备忘)。
+参照ng跟vue，我们可以自行设计一些命令。这里不那么复杂，我们先只实现数据绑定({{}}跟v-model)。
 - ng: ng-repeat、ng-if、ng-click、etc
 - vue: v-for、v-if、v-click、etc
 
-nodeType:
-ELEMENT: 1 // 元素节点
-ATTRIBUTE: 2 // 属性节点
-TEXT: 3 // 文本节点
+<br/>
+
+#### nextTick与虚拟dom
+
+- 到这里为止，上面的内容其实以及足够完成数据绑定。思考下面的场景：
+- 在极短时间内对页面上的一个元素发生多次改变(实际上我们只需要最终的结果而已)。
+- 思考：作为一个优化，能否将短时间内的多次更新->缩减到1次。ok，这样就引出了上面的2个概念：
+- 首先利用一定的手段将dom转成虚拟dom(对象模拟)，在一次周期(tick)内发生的所有变化，都先在构建的虚拟对象上操作，完了后再反应到真实dom。
+
+##### 第一个问题是：nextTick怎么设计？
+
+
+##### 第二个问题是：虚拟dom怎么构建，以及如何比较之间的变化？
+
