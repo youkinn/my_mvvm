@@ -34,8 +34,8 @@ Object.defineProperty(obj, 'key', {
 2. 解析完成后，如果数据发生变化，自动更新dom
 
 ##### 第一阶段负责页面解析，主要包括
-1.遍历所有元素节点上的属性节点(因为指令挂载在元素上)，并执行相应操作(比如遇到v-model我们将其换算为其注册input事件)。
-2.遍历所有的文本节点，找出所有的 {{}}, 替换变量。
+1. 遍历所有元素节点上的属性节点(因为指令挂载在元素上)，并执行相应操作(比如遇到v-model我们将其换算为其注册input事件)。
+2. 遍历所有的文本节点，找出所有的 {{}}, 替换变量。
 
 **！！关键点是：在合适的时机实例化订阅者**
 
@@ -59,8 +59,8 @@ Object.defineProperty(obj, 'key', {
 ##### 第二个问题是：虚拟dom怎么构建，以及如何比较之间的变化？
 
 首先看看vue中的实现：
-1. 对于给定的一段html，它会先转成类似下面的一个render函数，并挂载在vm实例上
-2. 监听到data里边对象的变化后，调用render函数生成新的虚拟Dom
+1. 对于给定的一段html，它会先将其转成类似下面的一个render函数，并挂载在vm实例上。
+2. 监听到data里边对象的变化后，调用render函数生成新的虚拟Dom。
 3. 将生成的虚拟dom，与老的虚拟dom，传入patch进行比较，得到一个差值，然后，更新到页面。
 
 ```
@@ -99,11 +99,44 @@ Object.defineProperty(obj, 'key', {
   }
 });
 
+// 监视变化
 vm._watcher = new Watcher(vm, function () {
    vm._update(vm._render(), hydrating);
 }, noop);
 
+// 新旧节点比较
 vm.$el = vm.__patch__(prevVnode, vnode);
 ```
 
-这里引出1个新问题 **diff比较算法的实现问题**，具体实现后面再说。
+这里引出1个新问题 **diff比较算法的实现问题**。
+
+##### ok，接下来尝试自己实现。首先，理下思路：
+1. 解决构造函数问题，决定VNode实例具体要挂载哪些属性。
+2. 数据变化后，我们需要一个类似render的功能函数来生成新的dom**(难点)**。
+3. 还需要一个diff函数，来比较新旧虚拟dom的差异**(难点)**。
+4. 将差异运用到页面上。
+
+<br/>
+
+- 构造函数
+
+先从几个简单的字段开始：
+1. 标签名(nodeName)
+2. 节点类型(nodeType)
+3. 节点文字(nodeValue)
+4. 节点属性(props)
+5. 子虚拟节点(children)
+6. 对应的dom节点(el)
+
+```
+function VNode(nodeName, nodeType, nodeValue, props, children, el) {
+    this.nodeName = nodeName;
+    this.nodeType = nodeType;
+    this.nodeValue = nodeValue;
+    this.props = props;
+    this.children = children;
+    this.el = el;
+}
+```
+
+- render函数
